@@ -1,12 +1,12 @@
 
 /*-----------------------------------------------------------------------------------------------------------------
-//*  MesaAyuda.js debe copiarse al directorio del proyecto express como index.js
-//*
-//*  REST API 
-//*  UADER - FCyT - Ingenieria de Software I 
-//*  Caso de estudio MesaAyuda
-//*
-//*  Dr. Pedro E. Colla 2023,2025
+  MesaAyuda.js debe copiarse al directorio del proyecto express como index.js
+
+  REST API 
+  UADER - IS1
+  Caso de estudio MesaAyuda
+
+  Dr. Pedro E. Colla 2023,2025
  *----------------------------------------------------------------------------------------------------------------*/
 //AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE=1
 
@@ -31,7 +31,7 @@ import cors from 'cors';
 console.log("cors ok!");
 
 app.use(cors());
-console.log("CORS ready!");
+console.log("cors ready!");
 
 import AWS from 'aws-sdk'
 //var AWS = require('aws-sdk');
@@ -40,10 +40,8 @@ console.log("aws-sdk ready!");
 /*----
 Acquire critical security resources from an external file out of the path
 */
-
 //const accessKeyId = require('../accessKeyId.js');
 //const secretAccessKey = require('../secretAccessKey.js');
-
 import accessKeyId from '../accessKeyId.js';
 import secretAccessKey  from '../secretAccessKey.js';
 
@@ -58,10 +56,6 @@ AWS.config.update(awsConfig);
 console.log("Servidor listo!");
 let docClient = new AWS.DynamoDB.DocumentClient();
 
-/*----
-   Application server in LISTEN mode
-*/
-
 app.listen(
     PORT,
     () => console.log(`Servidor listo en http://localhost:${PORT}`)
@@ -69,9 +63,10 @@ app.listen(
 
 app.use(express.json());
 
-/*-------------------------------------------------------------------------------------------
-                            Funciones y Servicios
- *-------------------------------------------------------------------------------------------*/
+app.get('/api/cliente', (req,res) => {
+    res.status(200).send({response : "OK", message : "API Ready"});
+    console.log("API cliente: OK");
+});
 
 /*-----------
 función para hacer el parse de un archivo JSON
@@ -81,87 +76,15 @@ function jsonParser(keyValue,stringValue) {
     var objectValue = JSON.parse(string);
     return objectValue[keyValue];
 }
-
-/*-------------------------------------------------------------------------------------------
-                            SERVER API 
- *-------------------------------------------------------------------------------------------*/
-/*==*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
- *                       API REST Cliente                                                   *
- *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*==*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/
-
-app.get('/api/cliente', (req,res) => {
-    res.status(200).send({response : "OK", message : "API Ready"});
-    console.log("API cliente: OK");
-});
-
-
-/*---
-  /api/loginCliente
-  Esta API permite acceder a un cliente por ID y comparar la password pasada en un JSON en el cuerpo con la indicada en el DB
-*/  
-
-//Solicita con POST las credenciales en un JSON {contacto: "e-mail", password: "password"}
-app.post('/api/loginCliente', (req,res) => {
-
-    const { contacto } = req.body;
-    const {password} = req.body;
-
-    console.log("loginCliente: id("+contacto+") password ("+password+")");
-
-    if (!password) {
-        res.status(400).send({response : "ERROR" , message : "Password no informada"});
-        return;
-    }    
-    if (!contacto) {
-        res.status(400).send({response : "ERROR" , message : "id no informado"});
-        return;
-    }    
-
-    const paramsScan = {
-        TableName: "cliente", 
-        FilterExpression: "contacto = :contacto",
-        ExpressionAttributeValues: {
-            ":contacto": contacto
-        }
-    };
-
-    docClient.scan(paramsScan, function (err, data) {
-            if (err) { //Devuelve un error si no puede acceder al DB
-                res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
-            }
-            else {
-                if (Object.keys(data).length == 0) { //Comprueba si el scan devolvió algo
-                    res.status(400).send({response : "ERROR" , message : "Cliente invalido"}); //No encontró el contacto
-                } else { //Si encontró el contacto compara la password
-                    const data1 = data.Items[0]; //como el scan devuelve un array de objetos tomamos el primero
-                    //Extrae los datos del cliente  
-                    const paswd=jsonParser('password',data1);
-                    const activo=jsonParser('activo',data1);
-                    const id=jsonParser('id',data1);
-                    const contacto=jsonParser('contacto',data1);
-                    if (password == paswd) { //Comprueba que la contraseña ingresada y la del DB coincidan
-                        if (activo == true) { //Comprueba que el cliente esté activo
-                            const nombre=jsonParser('nombre',data1);
-                            const fecha_ultimo_ingreso=jsonParser('fecha_ultimo_ingreso',data1);
-                            res.status(200).send(JSON.stringify({response : "OK", "id" : id, "nombre" : nombre, "contacto" : contacto, "fecha_ultimo_ingreso": fecha_ultimo_ingreso}));    
-                        } else { //El cliente no está activo
-                            res.status(400).send(JSON.stringify({response : "ERROR", message : "Cliente no activo"}));    
-                        }
-                    } else { //La contraseña no coincide
-                       res.status(400).send(JSON.stringify({response : "ERROR" , message : "usuario incorrecto"}));
-                    }    
-            }    
-            }
-    })
-
-});
+/*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
+/*                                                       API REST Cliente                                                            *
+/*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 
 /*-----------
   /api/getCliente
   Esta API permite acceder a un cliente dado su id
 */
-
 app.post('/api/getCliente/:id', (req,res) => {
     const { id } = req.params;
     console.log("getCliente: id("+id+")");
@@ -188,11 +111,73 @@ app.post('/api/getCliente/:id', (req,res) => {
 
 } );
 
+/*---
+  /api/loginCliente
+  Esta API permite acceder a un cliente por ID y comparar la password pasada en un JSON en el cuerpo con la indicada en el DB
+*/  
+app.post('/api/loginCliente', (req, res) => {
+    // Cambio solicitado: usar contacto (correo) en lugar de id para el login
+    const { contacto, password } = req.body;
+
+    console.log(`loginCliente: contacto(${contacto}) password(${password})`);
+
+    if (!password) {
+        res.status(400).send({ response: 'ERROR', message: 'Password no informada' });
+        return;
+    }
+
+    if (!contacto) {
+        res.status(400).send({ response: 'ERROR', message: 'contacto no informado' });
+        return;
+    }
+
+    const paramsScan = {
+        TableName: 'cliente',
+        FilterExpression: 'contacto = :contacto',
+        ExpressionAttributeValues: {
+            ':contacto': contacto,
+        },
+    };
+
+    console.log('loginCliente: paramsScan=', paramsScan);
+
+    docClient.scan(paramsScan, function (err, data) {
+        if (err) {
+            console.error('loginCliente: error en scan ->', err);
+            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'DB access error ' + err }));
+            return;
+        }
+
+        if (!data || !data.Items || data.Items.length === 0) {
+            res.status(400).send({ response: 'ERROR', message: 'Cliente invalido' });
+            return;
+        }
+
+        const item = data.Items[0];
+        const paswd = jsonParser('password', item);
+        const activo = jsonParser('activo', item);
+        const idResp = jsonParser('id', item);
+        const contactoResp = jsonParser('contacto', item);
+
+        if (password == paswd) {
+            if (activo == true) {
+                const nombre = jsonParser('nombre', item);
+                const fecha_ultimo_ingreso = jsonParser('fecha_ultimo_ingreso', item);
+                res.status(200).send(
+                    JSON.stringify({ response: 'OK', id: idResp, nombre: nombre, contacto: contactoResp, fecha_ultimo_ingreso: fecha_ultimo_ingreso })
+                );
+            } else {
+                res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'Cliente no activo' }));
+            }
+        } else {
+            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'usuario incorrecto' }));
+        }
+    });
+});
+
 /*---------
 Función para realizar el SCAN de un DB de cliente usando contacto como clave para la búsqueda (no es clave formal del DB)
 */
-
-//Realiza un scan en la tabla cliente buscando el contacto (e-mail)
 async function scanDb(contacto) {
     var docClient = new AWS.DynamoDB.DocumentClient();
     const scanKey=contacto;
@@ -451,15 +436,15 @@ async function scanDbTicket(clienteID) {
 */  
 app.post('/api/listarTicket', (req,res) => {
 
-    const {ID}  = req.body;
-    console.log("listarTicket: ID("+ID+")");
+    const {clienteID}  = req.body;
+    console.log("listarTicket: clienteID("+clienteID+")");
  
-    if (!ID) {
-        res.status(400).send({response : "ERROR" , message: "ID cliente  no informada"});
+    if (!clienteID) {
+        res.status(400).send({response : "ERROR" , message: "clienteID no informada"});
         return;
     }
 
-    scanDbTicket(ID)
+    scanDbTicket(clienteID)
     .then(resultDb => {
       if (Object.keys(resultDb).length == 0) {
         res.status(400).send({response : "ERROR" , message : "clienteID no tiene tickets"});
