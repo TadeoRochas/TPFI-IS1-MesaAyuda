@@ -115,58 +115,64 @@ app.post('/api/getCliente/:id', (req,res) => {
   /api/loginCliente
   Esta API permite acceder a un cliente por ID y comparar la password pasada en un JSON en el cuerpo con la indicada en el DB
 */  
-app.post('/api/loginCliente', (req,res) => {
+app.post('/api/loginCliente', (req, res) => {
+    // Cambio solicitado: usar contacto (correo) en lugar de id para el login
+    const { contacto, password } = req.body;
 
-    const { id } = req.body;
-    const {password} = req.body;
-
-    console.log("loginCliente: id("+id+") password ("+password+")");
+    console.log(`loginCliente: contacto(${contacto}) password(${password})`);
 
     if (!password) {
-        res.status(400).send({response : "ERROR" , message : "Password no informada"});
+        res.status(400).send({ response: 'ERROR', message: 'Password no informada' });
         return;
-    }    
-    if (!id) {
-        res.status(400).send({response : "ERROR" , message : "id no informado"});
-        return;
-    }    
-
-    let getClienteByKey = function () {
-        var params = {
-            TableName: "cliente",
-            Key: {
-                "id" : id
-            }
-        };
-        docClient.get(params, function (err, data) {
-            if (err) {
-                res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
-            }
-            else {
-                if (Object.keys(data).length == 0) {
-                    res.status(400).send({response : "ERROR" , message : "Cliente invalido"});
-                } else {
-                    const paswd=jsonParser('password',data.Item);
-                    const activo=jsonParser('activo',data.Item);
-                    const id=jsonParser('id',data.Item);
-                    const contacto=jsonParser('contacto',data.Item);
-                    if (password == paswd) {
-                        if (activo == true) {
-                            const nombre=jsonParser('nombre',data.Item);
-                            const fecha_ultimo_ingreso=jsonParser('fecha_ultimo_ingreso',data.Item);
-                            res.status(200).send(JSON.stringify({response : "OK", "id" : id, "nombre" : nombre, "contacto" : contacto, "fecha_ultimo_ingreso": fecha_ultimo_ingreso}));    
-                        } else {
-                            res.status(400).send(JSON.stringify({response : "ERROR", message : "Cliente no activo"}));    
-                        }
-                    } else {
-                       res.status(400).send(JSON.stringify({response : "ERROR" , message : "usuario incorrecto"}));
-                    }    
-            }    
-            }
-        })
     }
-    getClienteByKey();
 
+    if (!contacto) {
+        res.status(400).send({ response: 'ERROR', message: 'contacto no informado' });
+        return;
+    }
+
+    const paramsScan = {
+        TableName: 'cliente',
+        FilterExpression: 'contacto = :contacto',
+        ExpressionAttributeValues: {
+            ':contacto': contacto,
+        },
+    };
+
+    console.log('loginCliente: paramsScan=', paramsScan);
+
+    docClient.scan(paramsScan, function (err, data) {
+        if (err) {
+            console.error('loginCliente: error en scan ->', err);
+            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'DB access error ' + err }));
+            return;
+        }
+
+        if (!data || !data.Items || data.Items.length === 0) {
+            res.status(400).send({ response: 'ERROR', message: 'Cliente invalido' });
+            return;
+        }
+
+        const item = data.Items[0];
+        const paswd = jsonParser('password', item);
+        const activo = jsonParser('activo', item);
+        const idResp = jsonParser('id', item);
+        const contactoResp = jsonParser('contacto', item);
+
+        if (password == paswd) {
+            if (activo == true) {
+                const nombre = jsonParser('nombre', item);
+                const fecha_ultimo_ingreso = jsonParser('fecha_ultimo_ingreso', item);
+                res.status(200).send(
+                    JSON.stringify({ response: 'OK', id: idResp, nombre: nombre, contacto: contactoResp, fecha_ultimo_ingreso: fecha_ultimo_ingreso })
+                );
+            } else {
+                res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'Cliente no activo' }));
+            }
+        } else {
+            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'usuario incorrecto' }));
+        }
+    });
 });
 
 /*---------

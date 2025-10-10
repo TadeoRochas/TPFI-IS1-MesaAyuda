@@ -53,7 +53,7 @@ AWS
 
 const HTMLResponse=document.querySelector("#app");
 var ticket = {
-    "ID" : query.id,
+    "clienteID" : query.id,
 };
     
 var options = {
@@ -67,9 +67,9 @@ switch (query.mode) {
     console.log("Utiliza servidor NodeJS local.");
     console.log("API_listarTicket:"+RESTAPI.listarTicket); 
   
-    ticket = {
-       "ID" : query.id,
-    };
+     ticket = {
+         "clienteID" : query.id,
+     };
     
     options = {
        method: 'POST',
@@ -96,49 +96,57 @@ switch (query.mode) {
     APIREST_URL='https://n3ttz410ze.execute-api.us-east-1.amazonaws.com/default/listTicketGET?ID='+query.id;
 }
 console.log("APIREST_URL:"+APIREST_URL);
-console.log("ticket  :"+JSON.stringify(ticket));
+    console.log("ticket  :"+JSON.stringify(ticket));
 console.log("options :"+JSON.stringify(options));
 
 
 fetch(`${APIREST_URL}`,options)
-.then(res => {
-    return res.json();
-}).then(ticket=>{
-    console.log("ticket:");
-    console.log(ticket);
-    let f=false;
-    let table=document.createElement("table");
-    table.style.border="1px solid";
-    table.style.backgroundColor="##626607";
-//ticket.uresponse.forEach((t)=> { 
-    ticket.data.forEach((t)=> { 
-        console.log(t.clienteID)
-        if (t.clienteID == query.id) {
-            if (f==false) {
-                f=true;
-                const hdr=["Cliente","ID","Motivo","Estado","Fecha"];
-                let tr=document.createElement("tr");
-                tr.style.border="1px solid";
-                hdr.forEach((item) => {
-                    let th=document.createElement("th");
-                    th.style.border="1px solid";
+.then(res => res.json())
+.then(ticket => {
+    console.log("ticket:", ticket);
 
+    // Manejo de errores: si el servidor no respondió OK mostramos mensaje
+    if (!ticket || ticket.response !== 'OK' || !ticket.data) {
+        console.log('No hay tickets o error de servidor', ticket);
+        document.getElementById('mensajes').style.textAlign = 'center';
+        document.getElementById('mensajes').style.color = 'RED';
+        const msg = ticket && ticket.message ? ticket.message : 'No hay tickets pendientes';
+        document.getElementById('mensajes').innerHTML = msg;
+        return;
+    }
+
+    let f = false;
+    let table = document.createElement('table');
+    table.style.border = '1px solid';
+    table.style.backgroundColor = '##626607';
+
+    ticket.data.forEach((t) => {
+        console.log(t.clienteID);
+        if (t.clienteID == query.id) {
+            if (f == false) {
+                f = true;
+                const hdr = ['Cliente', 'ID', 'Motivo', 'Estado', 'Fecha'];
+                let tr = document.createElement('tr');
+                tr.style.border = '1px solid';
+                hdr.forEach((item) => {
+                    let th = document.createElement('th');
+                    th.style.border = '1px solid';
                     th.innerText = item;
                     tr.appendChild(th);
                 });
-                table.appendChild(tr);                   
+                table.appendChild(tr);
             }
 
-            const body=[t.clienteID,`${t.id}`,`${t.solucion}`,`${t.estado_solucion}`,`${t.ultimo_contacto}`];
-            
-            let trl=document.createElement("tr");
+            const body = [t.clienteID, `${t.id}`, `${t.solucion}`, `${t.estado_solucion}`, `${t.ultimo_contacto}`];
+
+            let trl = document.createElement('tr');
             body.forEach((line) => {
-                let td=document.createElement("td");
-                td.style.border="1px solid";
+                let td = document.createElement('td');
+                td.style.border = '1px solid';
                 td.innerText = line;
                 trl.appendChild(td);
             });
-            table.appendChild(trl);                   
+            table.appendChild(trl);
         }
     });
 
@@ -146,10 +154,9 @@ fetch(`${APIREST_URL}`,options)
         console.log(table);
         HTMLResponse.appendChild(table);
     } else {
-
-        console.log("no tiene tickets");
-        document.getElementById('mensajes').style.textAlign = "center";
-        document.getElementById('mensajes').style.color="RED";
-        document.getElementById("mensajes").innerHTML = "No hay tickets pendientes";
+        console.log('no tiene tickets');
+        document.getElementById('mensajes').style.textAlign = 'center';
+        document.getElementById('mensajes').style.color = 'RED';
+        document.getElementById('mensajes').innerHTML = 'No hay tickets pendientes';
     }
 });

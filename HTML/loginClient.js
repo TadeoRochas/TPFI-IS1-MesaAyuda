@@ -15,22 +15,22 @@ formE1.addEventListener('submit', (event) => {
         Realiza validaciones en los datos del formulario antes de procesar
         */
 
-	if (data.id == '' || data.password == '') {
-		console.log('debe indicar usuario');
+	if (data.contacto == '' || data.password == '') {
+		console.log('debe indicar contacto');
 		document.getElementById('resultado1').style.color = 'RED';
 		document.getElementById('resultado1').style.textAlign = 'center';
 		document.getElementById('resultado1').textContent =
-			'Debe informar usuario y password para  completar el acceso';
+			'Debe informar correo y password para  completar el acceso';
 		return;
 	}
 
-	if (data.id == 'pec') {   /*--Fix hecho por  Germán Lombardi IS1-2025 */
+	if (data.contacto == 'pec') {   /*--Fix hecho por  Germán Lombardi IS1-2025 */
 		console.log('pec no es bienvenido en éste sistema');
 		const m = '<li>El usuario <pec> no es bienvenido en éste sistema</li>';
 		document.getElementById('resultado2').style.color = 'RED';
 		document.getElementById('resultado2').style.textAlign = 'center';
 		document.getElementById('resultado2').textContent =
-			'El usuario <pec> no es bienvenido en éste sistema';
+			'El contacto <pec> no es bienvenido en éste sistema';
 		return;
 	}
 	if (data.termscondition != 'on') {
@@ -70,8 +70,10 @@ formE1.addEventListener('submit', (event) => {
 	/*-----
         Crea estructuras para acceder a data del cliente
         */
+
+		//Crea el objeto login y recibe los datos del HTML
 	    const login = {
-	        id: data.id,
+	        contacto: data.contacto,
 		    password: data.password
 		}	
 
