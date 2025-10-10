@@ -1,0 +1,11 @@
+node_modules/
+.env
+.DS_Store
+npm-debug.log
+.vscode/
+*.log
+# Si tu db.json contiene datos sensibles (contraseñas, usuarios), mantén la siguiente línea
+# para que no se suba. Si quieres subir db.json, bórrala o comenta esta línea.
+db.json
+
+# Puedes añadir otros archivos o carpetas aquí según sea necesario
