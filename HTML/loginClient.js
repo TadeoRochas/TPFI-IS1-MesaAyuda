@@ -71,11 +71,12 @@ formE1.addEventListener('submit', (event) => {
         Crea estructuras para acceder a data del cliente
         */
 
+		// Nota: enviamos 'contacto' (correo) y 'password' — el servidor busca por 'contacto' para autenticar.
 		//Crea el objeto login y recibe los datos del HTML
 	    const login = {
 	        contacto: data.contacto,
 		    password: data.password
-		}	
+		}    
 
 		const options = {
 			method: 'POST',

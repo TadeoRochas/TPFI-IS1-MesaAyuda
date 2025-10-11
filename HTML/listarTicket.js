@@ -52,6 +52,9 @@ AWS
 */
 
 const HTMLResponse=document.querySelector("#app");
+// Recordatorio: aquí usamos 'clienteID' (id interno del cliente) para listar tickets.
+// El login se realiza por 'contacto' (correo), pero la consulta de tickets usa el 'id'
+// que el servidor devuelve como parte de la respuesta tras el login.
 var ticket = {
     "clienteID" : query.id,
 };

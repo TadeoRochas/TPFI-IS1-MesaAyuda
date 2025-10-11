@@ -117,6 +117,7 @@ app.post('/api/getCliente/:id', (req,res) => {
 */  
 app.post('/api/loginCliente', (req, res) => {
     // Cambio solicitado: usar contacto (correo) en lugar de id para el login
+    // Nota: el cliente envía { contacto, password } en el body; el servidor busca por 'contacto'.
     const { contacto, password } = req.body;
 
     console.log(`loginCliente: contacto(${contacto}) password(${password})`);
