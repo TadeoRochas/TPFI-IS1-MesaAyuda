@@ -9,7 +9,7 @@ formE1.addEventListener('submit', (event) => {
 	const formData = new FormData(formE1);
 	const data = Object.fromEntries(formData);
 	console.log('Application Server: Revisa el valor del form:');
-	console.log(data);
+	console.log({ contacto: data.contacto, password: '[Censurado]', termscondition: data.termscondition });
 
 	/*---
         Realiza validaciones en los datos del formulario antes de procesar
@@ -72,7 +72,7 @@ formE1.addEventListener('submit', (event) => {
         */
 
 		// Nota: enviamos 'contacto' (correo) y 'password' — el servidor busca por 'contacto' para autenticar.
-		//Crea el objeto login y recibe los datos del HTML
+		// Crea el objeto login y recibe los datos del HTML
 	    const login = {
 	        contacto: data.contacto,
 		    password: data.password
@@ -89,9 +89,9 @@ formE1.addEventListener('submit', (event) => {
 
 
 	 	console.log('API REST:' + RESTAPI.loginCliente);
-	    console.log(login);
-	    console.log('login(' + JSON.stringify(login) + ')');
-	    console.log('options ' + JSON.stringify(options));
+	    console.log({ contacto: login.contacto, password: '[Censurado]' });
+	    console.log('login(contacto: ' + login.contacto + ', password: [Censurado])');
+	    console.log('options (body con password censurado)');
     	var API = RESTAPI.loginCliente;
 	    var APIoptions = options;
 
@@ -125,6 +125,7 @@ formE1.addEventListener('submit', (event) => {
 	/*----------------------------------------------------------------------*/
 	if (MODE == 'AWS') {
 		console.log('Acceso usando AWS lambda como application server');
+		console.log('AWS URL: [URL con password censurado]');
 		API='https://fmtj0jrpp9.execute-api.us-east-1.amazonaws.com/default/loginUserGET?ID=' + data.id + '&PASSWORD=' + data.password;
     	APIoptions = { method: 'GET' };
 	}
@@ -141,7 +142,6 @@ formE1.addEventListener('submit', (event) => {
 			console.log(
 				'Datos en respuesta del application server=' + JSON.stringify(users)
 			);
-			console.log('users.response=' + users.password);
 			if (users.response == 'OK') {
 				//<==Habilitar esto para dejar que el API REST verifique sin exponer la password
 				console.log('La password es correcta');

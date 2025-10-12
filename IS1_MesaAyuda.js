@@ -101,7 +101,20 @@ app.post('/api/getCliente/:id', (req,res) => {
         } else {
 
             if (Object.keys(data).length != 0) {
-               res.status(200).send(JSON.stringify({"response":"OK","cliente" : data.Item}),null,2);
+               // Excluir password de la respuesta por seguridad
+               // Creamos un nuevo objeto con solo los datos que queremos enviar (sin password)
+               const clienteSinPassword = {
+                   id: data.Item.id,
+                   nombre: data.Item.nombre,
+                   contacto: data.Item.contacto,
+                   activo: data.Item.activo,
+                   registrado: data.Item.registrado,
+                   primer_ingreso: data.Item.primer_ingreso,
+                   fecha_alta: data.Item.fecha_alta,
+                   fecha_cambio_password: data.Item.fecha_cambio_password,
+                   fecha_ultimo_ingreso: data.Item.fecha_ultimo_ingreso
+               };
+               res.status(200).send(JSON.stringify({"response":"OK","cliente" : clienteSinPassword}),null,2);
             } else {
                res.status(400).send(JSON.stringify({"response":"ERROR",message : "Cliente no existe"}),null,2);
             }
@@ -113,14 +126,18 @@ app.post('/api/getCliente/:id', (req,res) => {
 
 /*---
   /api/loginCliente
-  Esta API permite acceder a un cliente por ID y comparar la password pasada en un JSON en el cuerpo con la indicada en el DB
+  Esta API permite acceder a un cliente por contacto y comparar la password pasada en un JSON en el cuerpo con la indicada en el DB
 */  
 app.post('/api/loginCliente', (req, res) => {
     // Cambio solicitado: usar contacto (correo) en lugar de id para el login
     // Nota: el cliente envía { contacto, password } en el body; el servidor busca por 'contacto'.
+
     const { contacto, password } = req.body;
 
-    console.log(`loginCliente: contacto(${contacto}) password(${password})`);
+    // Por seguridad no mostramos la contraseña en texto claro en los logs
+
+    // console.log(`loginCliente: contacto(${contacto}) password=${password}`);
+    console.log(`loginCliente: contacto(${contacto}) password=[Censurado]`);
 
     if (!password) {
         res.status(400).send({ response: 'ERROR', message: 'Password no informada' });
@@ -198,12 +215,18 @@ async function scanDb(contacto) {
 addCliente
 Revisa si el contacto (e-mail) existe y en caso que no da de alta el cliente generando un id al azar
 */
+
+//Crea un usuario nuevo
 app.post('/api/addCliente', (req,res) => {
 
     const {contacto} = req.body;
     const {password} = req.body;
     const {nombre}   = req.body;
-    console.log("addCliente: contacto("+contacto+") nombre("+nombre+") password("+password+")");
+
+    //Mantiene la password censurada en los logs
+
+    //console.log("addCliente: contacto("+contacto+") nombre("+nombre+") password("+password+")");
+    console.log("addCliente: contacto("+contacto+") nombre("+nombre+") password=[Censurado]");
     
     if (!password) {
         res.status(400).send({response : "ERROR" , message: "Password no informada"});
@@ -253,7 +276,20 @@ app.post('/api/addCliente', (req,res) => {
             if (err) {
                 res.status(400).send(JSON.stringify({response : "ERROR", message : "DB error" + err}));
             } else {
-                res.status(200).send(JSON.stringify({response : "OK", "cliente": newCliente}));
+                // Excluir password de la respuesta por seguridad
+                // Creamos un nuevo objeto con solo los datos que queremos enviar (sin password)
+                const clienteSinPassword = {
+                    id: newCliente.id,
+                    nombre: newCliente.nombre,
+                    contacto: newCliente.contacto,
+                    activo: newCliente.activo,
+                    registrado: newCliente.registrado,
+                    primer_ingreso: newCliente.primer_ingreso,
+                    fecha_alta: newCliente.fecha_alta,
+                    fecha_cambio_password: newCliente.fecha_cambio_password,
+                    fecha_ultimo_ingreso: newCliente.fecha_ultimo_ingreso
+                };
+                res.status(200).send(JSON.stringify({response : "OK", "cliente": clienteSinPassword}));
             }
         });
     }
@@ -273,7 +309,10 @@ app.post('/api/updateCliente', (req,res) => {
     var activo = ((req.body.activo+'').toLowerCase() === 'true')
     var registrado = ((req.body.registrado+'').toLowerCase() === 'true')
 
-    console.log("updateCliente: id("+id+") nombre("+nombre+") password("+password+") activo("+activo+") registrado("+registrado+")");
+
+    // Mantiene la password censurada en los logs
+    // console.log("updateCliente: id("+id+") nombre("+nombre+") password("+password+") activo("+activo+") registrado("+registrado+")");
+    console.log("updateCliente: id("+id+") nombre("+nombre+") password=[Censurado] activo("+activo+") registrado("+registrado+")");
 
     if (!id) {
         res.status(400).send({response : "ERROR" , message: "Id no informada"});
@@ -336,7 +375,21 @@ app.post('/api/updateCliente', (req,res) => {
                         res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
                         return;
                     } else {
-                        res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": data}));
+                        // Excluir password de la respuesta por seguridad
+                        // DynamoDB devuelve los datos actualizados en data.Attributes
+                        // Creamos un nuevo objeto con solo los datos que queremos enviar (sin password)
+                        const dataSinPassword = {
+                            id: data.Attributes.id,
+                            nombre: data.Attributes.nombre,
+                            contacto: data.Attributes.contacto,
+                            activo: data.Attributes.activo,
+                            registrado: data.Attributes.registrado,
+                            primer_ingreso: data.Attributes.primer_ingreso,
+                            fecha_alta: data.Attributes.fecha_alta,
+                            fecha_cambio_password: data.Attributes.fecha_cambio_password,
+                            fecha_ultimo_ingreso: data.Attributes.fecha_ultimo_ingreso
+                        };
+                        res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": { Attributes: dataSinPassword }}));
                     }    
                 });    
             }
@@ -403,7 +456,21 @@ app.post('/api/resetCliente', (req,res) => {
                         res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
                         return;
                     } else {
-                        res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": data}));
+                        // Excluir password de la respuesta por seguridad
+                        // DynamoDB devuelve los datos actualizados en data.Attributes
+                        // Creamos un nuevo objeto con solo los datos que queremos enviar (sin password)
+                        const dataSinPassword = {
+                            id: data.Attributes.id,
+                            nombre: data.Attributes.nombre,
+                            contacto: data.Attributes.contacto,
+                            activo: data.Attributes.activo,
+                            registrado: data.Attributes.registrado,
+                            primer_ingreso: data.Attributes.primer_ingreso,
+                            fecha_alta: data.Attributes.fecha_alta,
+                            fecha_cambio_password: data.Attributes.fecha_cambio_password,
+                            fecha_ultimo_ingreso: data.Attributes.fecha_ultimo_ingreso
+                        };
+                        res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": { Attributes: dataSinPassword }}));
                     }    
                 });    
             }
