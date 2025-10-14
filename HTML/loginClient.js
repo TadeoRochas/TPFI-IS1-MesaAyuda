@@ -7,9 +7,14 @@ const formE1 = document.querySelector('.form');
 formE1.addEventListener('submit', (event) => {
 	event.preventDefault();
 	const formData = new FormData(formE1);
+
+
 	const data = Object.fromEntries(formData);
 	console.log('Application Server: Revisa el valor del form:');
-	console.log({ contacto: data.contacto, password: '[Censurado]', termscondition: data.termscondition });
+	// No usamos esto ya que expone la password
+	// console.log(data);
+	// Usamos esto en su lugar para mostrar todo menos la password.
+	console.log({ contacto: data.contacto, password: '[Censurado]'});
 
 	/*---
         Realiza validaciones en los datos del formulario antes de procesar
@@ -89,8 +94,20 @@ formE1.addEventListener('submit', (event) => {
 
 
 	 	console.log('API REST:' + RESTAPI.loginCliente);
+
+		// No usamos esto ya que expone la password
+		// console.log(login);
+		// Usamos esto en su lugar para mostrar todo menos la password.
 	    console.log({ contacto: login.contacto, password: '[Censurado]' });
+
+		// No usamos esto ya que expone la password
+		// console.log('login(' + JSON.stringify(login) + ')');
+		// Usamos esto en su lugar para mostrar todo menos la password.
 	    console.log('login(contacto: ' + login.contacto + ', password: [Censurado])');
+
+		// No usamos esto ya que expone la password
+		// console.log('options ' + JSON.stringify(options));
+		// Usamos esto en su lugar para mostrar todo menos la password.
 	    console.log('options (body con password censurado)');
     	var API = RESTAPI.loginCliente;
 	    var APIoptions = options;
@@ -123,6 +140,17 @@ formE1.addEventListener('submit', (event) => {
 	/*                                                                      */
 	/* Para activar el acceso mediante AWS hacer const aws=true;            */
 	/*----------------------------------------------------------------------*/
+
+
+	// En modo AWS se accede con GET y se envía la password en la URL
+	// if (MODE == 'AWS') {
+    // console.log('Acceso usando AWS lambda como application server');
+    // API='https://fmtj0jrpp9.execute-api.us-east-1.amazonaws.com/default/loginUserGET?ID=' + data.id + '&PASSWORD=' + data.password;
+    // APIoptions = { method: 'GET' };
+	// }
+
+
+	// Se deja activo el modo AWS pero censurando la password en los logs
 	if (MODE == 'AWS') {
 		console.log('Acceso usando AWS lambda como application server');
 		console.log('AWS URL: [URL con password censurado]');

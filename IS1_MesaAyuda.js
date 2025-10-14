@@ -202,7 +202,7 @@ async function scanDb(contacto) {
     const paramsScan = { // ScanInput
       TableName: "cliente", // required
       Select: "ALL_ATTRIBUTES" || "ALL_PROJECTED_ATTRIBUTES" || "SPECIFIC_ATTRIBUTES" || "COUNT",
-      FilterExpression : 'id = :contacto',
+      FilterExpression : 'contacto = :contacto',
       ExpressionAttributeValues : {':contacto' : scanKey}
     };      
     var objectPromise = await docClient.scan(paramsScan).promise().then((data) => {
