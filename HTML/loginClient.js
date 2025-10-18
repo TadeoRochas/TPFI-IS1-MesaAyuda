@@ -11,10 +11,12 @@ formE1.addEventListener('submit', (event) => {
 
 	const data = Object.fromEntries(formData);
 	console.log('Application Server: Revisa el valor del form:');
+	
+	//Punto del práctico, no exponer la password en los textos claros.
 	// No usamos esto ya que expone la password
 	// console.log(data);
 	// Usamos esto en su lugar para mostrar todo menos la password.
-	console.log({ contacto: data.contacto, password: '[Censurado]'});
+	console.log({ contacto: data.contacto, password: '[Censurado]' });
 
 	/*---
         Realiza validaciones en los datos del formulario antes de procesar
@@ -94,7 +96,7 @@ formE1.addEventListener('submit', (event) => {
 
 
 	 	console.log('API REST:' + RESTAPI.loginCliente);
-
+		//Punto del práctico, no exponer la password en los textos claros.
 		// No usamos esto ya que expone la password
 		// console.log(login);
 		// Usamos esto en su lugar para mostrar todo menos la password.

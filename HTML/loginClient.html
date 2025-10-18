@@ -38,6 +38,14 @@
                   outline: none; /*quita el borde azul del cuadro de texto*/
                 margin:0; /*quita el margen del cuadro de texto*/
             }
+
+            button {
+                margin-top: 10px; /*espacio arriba del botón*/
+                margin-bottom: 5px; /*espacio entre el botón y el texto de abajo*/
+                padding: 5px; /*espacio entre el borde y el texto del botón*/
+                width: 100px; /*ancho del botón*/
+            }
+            
         </style> 
     </head>
 <body>
@@ -71,18 +79,16 @@
             <tr><td><br></td></tr>
             <tr>
                 <td><center><a href="http://127.0.0.1:5500/loginClient.html">¿Olvidaste tu contraseña?</a></center></td>
-
             </tr>
             
-            <tr><td><br><input name="termscondition" type="checkbox"> Acepto los términos y condiciones del ingreso al sistema (S.E.u.O)</p></br></td></tr>
+            <tr><td style="padding-top: 10px;"><input name="termscondition" type="checkbox"> Acepto los términos y condiciones del ingreso al sistema (S.E.u.O)</td></tr>
             <tr><td><span id="resultado2"></span></td></tr>
 
         </table>
         
         <button type="submit">< Ingresar</button>
-        <tr>
-                <td><center><span>¿No tienes una cuenta? </span><a href="http://127.0.0.1:5500/loginClient.html">Registrate</a></center></td>
-            </tr>
+        
+        <p style="margin-top: 5px; margin-bottom: 5px;"><span>¿No tienes una cuenta? </span><a href="http://127.0.0.1:5500/loginClient.html">Registrate</a></p>
         
     <p> </p>
     </form>

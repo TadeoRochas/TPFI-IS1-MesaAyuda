@@ -177,12 +177,13 @@ app.post('/api/loginCliente', (req, res) => {
         const idResp = jsonParser('id', item);
         const contactoResp = jsonParser('contacto', item);
 
+        //El servidor valida la password comparandola con el DB
         if (password == paswd) {
             if (activo == true) {
                 const nombre = jsonParser('nombre', item);
                 const fecha_ultimo_ingreso = jsonParser('fecha_ultimo_ingreso', item);
                 res.status(200).send(
-                    JSON.stringify({ response: 'OK', id: idResp, nombre: nombre, contacto: contactoResp, fecha_ultimo_ingreso: fecha_ultimo_ingreso })
+                    JSON.stringify({ response: 'OK', id: idResp, nombre: nombre, contacto: contactoResp, fecha_ultimo_ingreso: fecha_ultimo_ingreso }) // Excluir password de la respuesta por seguridad
                 );
             } else {
                 res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'Cliente no activo' }));

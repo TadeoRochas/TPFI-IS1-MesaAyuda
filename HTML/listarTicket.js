@@ -23,12 +23,17 @@ Extrae del URL el id de cliente ya validado, su nombre y la última fecha de log
 console.log("Comienza listarTicket.js");
 
 var query = getQueryParams(document.location.search);
+
+// Se muestran todos los datos recibidos en la consola para control
 console.log("id:"+query.id);
+console.log("nombre:"+query.nombre);  //Log agregado para verificar que el nombre se recibe correctamente
 console.log("contacto:"+query.contacto);
 console.log("ultima_fecha:"+query.fecha_ultimo_ingreso);
 console.log("mode:"+query.mode);
 
-document.getElementById("lastlogin").innerHTML = "<table><tr><td>Cliente</td><td>"+query.id+"</td></tr><tr><td>Contacto</td><td>"+query.contacto+"</td></tr></tr><tr><td>Ultimo ingreso</td><td>"+query.fecha_ultimo_ingreso+"</td></tr></table>";
+// Punto del práctico, mostrar el nombre del cliente en el listarTicket.
+// Agregamos una nueva fila para mostrar el nombre del cliente entre el ID y el contacto
+document.getElementById("lastlogin").innerHTML = "<table><tr><td>Cliente</td><td>"+query.id+"</td></tr><tr><td>Nombre</td><td>"+query.nombre+"</td></tr><tr><td>Contacto</td><td>"+query.contacto+"</td></tr><tr><td>Ultimo ingreso</td><td>"+query.fecha_ultimo_ingreso+"</td></tr></table>";
 
 
 const systemURL={ 
