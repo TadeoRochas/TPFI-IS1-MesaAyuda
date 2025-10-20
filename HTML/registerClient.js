@@ -25,7 +25,7 @@ formE1.addEventListener('submit', (event) => {
 	*/
 
 	// Validación 1: Verificar que se ingrese el email (contacto)
-	if (data.contacto == '' || !data.contacto) {
+	if (data.contacto == '' || data.contacto) {
 		console.log('Error: Debe indicar un correo electrónico');
 		document.getElementById('resultado1').style.color = 'RED';
 		document.getElementById('resultado1').style.textAlign = 'center';
