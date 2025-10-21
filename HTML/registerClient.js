@@ -25,7 +25,7 @@ formE1.addEventListener('submit', (event) => {
 	*/
 
 	// Validación 1: Verificar que se ingrese el email (contacto)
-	if (data.contacto == '' || data.contacto) {
+	if (data.contacto == '' || !data.contacto) {
 		console.log('Error: Debe indicar un correo electrónico');
 		document.getElementById('resultado1').style.color = 'RED';
 		document.getElementById('resultado1').style.textAlign = 'center';
@@ -97,7 +97,8 @@ formE1.addEventListener('submit', (event) => {
 		IMPORTANTE: El servidor espera { contacto, password, nombre }
 		*/
 		const nuevoCliente = {
-			contacto: data.contacto,  // Email del usuario
+			id: data.contacto,  // Usamos el contacto como ID único, es la clave primaria que requiere el DynamoDB
+			contacto: data.contacto,  // Email del usuario, es el campo adicional para las busquedas por filtro.
 			password: data.password,   // Contraseña elegida
 			nombre: data.nombre        // Nombre completo
 		};

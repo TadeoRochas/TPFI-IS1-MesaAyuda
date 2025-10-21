@@ -166,10 +166,17 @@ app.post('/api/loginCliente', (req, res) => {
             return;
         }
 
+        // Log de debugging para ver qué devuelve la búsqueda
+        console.log('loginCliente: data recibido =', JSON.stringify(data));
+        console.log('loginCliente: cantidad de items encontrados =', data?.Items?.length || 0);
+
         if (!data || !data.Items || data.Items.length === 0) {
+            console.log('loginCliente: NO se encontró el usuario con contacto:', contacto);
             res.status(400).send({ response: 'ERROR', message: 'Cliente invalido' });
             return;
         }
+
+        console.log('loginCliente: Usuario encontrado! Item[0] =', JSON.stringify(data.Items[0]));
 
         const item = data.Items[0];
         const paswd = jsonParser('password', item);
@@ -258,6 +265,7 @@ app.post('/api/addCliente', (req,res) => {
         const newCliente = {
          id                    : contacto,
          nombre                : nombre,
+         contacto              : contacto, //sumamos esto para que se guarde el correo como contacto.
          password              : password,
          activo                : true,
          registrado            : true,
