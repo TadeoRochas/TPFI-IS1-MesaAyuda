@@ -173,7 +173,6 @@ formE1.addEventListener('submit', (event) => {
 				'Datos en respuesta del application server=' + JSON.stringify(users)
 			);
 			if (users.response == 'OK') {
-				//<==Habilitar esto para dejar que el API REST verifique sin exponer la password
 				console.log('La password es correcta');
 				console.log(
 					'nombre(' +
@@ -182,7 +181,20 @@ formE1.addEventListener('submit', (event) => {
 						users.fecha_ultimo_ingreso +
 						')' +
 						'mode(' + MODE + ')'
-				);
+					);
+					
+					// Mostramos mensaje de éxito al usuario
+					document.getElementById('resultado1').style.color = 'GREEN';
+					document.getElementById('resultado1').style.textAlign = 'center';
+					document.getElementById('resultado1').textContent =
+						'¡Sesion iniciada correctamente! Cargando tickets...';
+
+					// Esperamos 2 segundos para que el usuario vea el mensaje y luego redirigimos
+					setTimeout(() => {
+						console.log('Redirigiendo a login: ' + systemURL.loginCliente);
+						window.location.href = systemURL.loginCliente;
+					}, 2000);
+
 				console.log(
 					'id=' +
 						users.id +
