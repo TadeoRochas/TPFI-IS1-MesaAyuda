@@ -95,10 +95,10 @@ formE1.addEventListener('submit', (event) => {
 		/*-----
 		Crea el objeto con los datos del nuevo cliente para enviar al servidor
 		IMPORTANTE: El servidor espera { contacto, password, nombre }
+		El ID lo genera automáticamente el backend con crypto.randomUUID()
 		*/
 		const nuevoCliente = {
-			id: data.contacto,  // Usamos el contacto como ID único, es la clave primaria que requiere el DynamoDB
-			contacto: data.contacto,  // Email del usuario, es el campo adicional para las busquedas por filtro.
+			contacto: data.contacto,  // Email del usuario
 			password: data.password,   // Contraseña elegida
 			nombre: data.nombre        // Nombre completo
 		};

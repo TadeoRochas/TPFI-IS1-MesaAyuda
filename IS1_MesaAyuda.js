@@ -263,9 +263,9 @@ app.post('/api/addCliente', (req,res) => {
         hoy = dd + '/' + mm + '/' + yyyy;
     
         const newCliente = {
-         id                    : contacto,
+         id                    : crypto.randomUUID(), // Genera un ID único (ej: "a1b2c3d4-e5f6-7890-1234-567890abcdef")
          nombre                : nombre,
-         contacto              : contacto, //sumamos esto para que se guarde el correo como contacto.
+         contacto              : contacto, // El correo se guarda como contacto para búsquedas
          password              : password,
          activo                : true,
          registrado            : true,
