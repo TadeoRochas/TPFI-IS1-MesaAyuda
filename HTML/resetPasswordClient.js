@@ -84,11 +84,11 @@ formE1.addEventListener('submit', (event) => {
 	if (MODE == 'LOCAL') {
 		/*-----
 		Crea el objeto con los datos para resetear la contraseña
-		IMPORTANTE: El servidor espera { id, password }
+		IMPORTANTE: El servidor espera { contacto, password }
 		*/
 		const datosReset = {
-			id: data.contacto,       // El endpoint espera 'id' (que es el email del usuario)
-			password: data.password  // La nueva contraseña
+			contacto: data.contacto,  // El email del usuario
+			password: data.password   // La nueva contraseña
 		};
 
 		const options = {
@@ -101,7 +101,7 @@ formE1.addEventListener('submit', (event) => {
 
 		console.log('API REST resetCliente: ' + RESTAPI.resetCliente);
 		// Log censurado para debugging
-		console.log('Datos a enviar: { id: ' + datosReset.id + ', password: [Censurado] }');
+		console.log('Datos a enviar: { contacto: ' + datosReset.contacto + ', password: [Censurado] }');
 
 		var API = RESTAPI.resetCliente;
 		var APIoptions = options;

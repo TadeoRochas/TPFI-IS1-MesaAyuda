@@ -409,15 +409,17 @@ app.post('/api/updateCliente', (req,res) => {
 });
 /*-------
 /api/resetCliente
-Permite cambiar la password de un cliente
+Permite cambiar la password de un cliente buscando por contacto (email)
 */
 app.post('/api/resetCliente', (req,res) => {
     
-    const {id}       = req.body;
+    const {contacto} = req.body;
     const {password} = req.body;
  
-    if (!id) {
-        res.status(400).send({response : "ERROR" , message: "Id no informada"});
+    console.log("resetCliente: contacto(" + contacto + ") password=[Censurado]");
+
+    if (!contacto) {
+        res.status(400).send({response : "ERROR" , message: "Contacto (email) no informado"});
         return;
     }
 
@@ -426,65 +428,65 @@ app.post('/api/resetCliente', (req,res) => {
         return;
     }
 
-    var params = {
-        TableName: "cliente",
-        Key: {
-            "id" : id
-            //test use "id": "0533a95d-7eef-4c6b-b753-1a41c9d1fbd0"   
-             }
-        };
-        
-    docClient.get(params, function (err, data) {
-        if (err)  {
-            res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+ null}));
+    // Primero buscamos el cliente por contacto (email) usando scanDb
+    scanDb(contacto)
+    .then(resultDb => {
+        // scanDb() devuelve directamente el array de Items, no el objeto data completo
+        if (!resultDb || resultDb.length === 0) {
+            res.status(400).send({response : "ERROR" , message : "Cliente no existe"});
             return;
         } else {
+            // Cliente encontrado, obtenemos su ID (UUID)
+            console.log('resetCliente: Usuario encontrado! Item[0] =', JSON.stringify(resultDb[0]));
+            
+            const item = resultDb[0];
+            const clienteId = jsonParser('id', item);
+            
+            console.log('resetCliente: ID del cliente a actualizar:', clienteId);
 
-            if (Object.keys(data).length == 0) {
-                res.status(400).send(JSON.stringify({"response":"ERROR",message : "Cliente no existe"}),null,2);
-                return;
-            } else {
-
-                const paramsUpdate = { 
-   
-                    ExpressionAttributeNames: { 
-                         "#p": "password" 
-                    }, 
-                    ExpressionAttributeValues: { 
-                        ":p": password 
-                   }, 
-                   Key: { 
-                       "id": id 
-                   }, 
-                   ReturnValues: "ALL_NEW", 
-                   TableName: "cliente", 
-                   UpdateExpression: "SET #p = :p" 
-                };
-                docClient.update(paramsUpdate, function (err, data) {
-                    if (err)  {
-                        res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
-                        return;
-                    } else {
-                        // Excluir password de la respuesta por seguridad
-                        // DynamoDB devuelve los datos actualizados en data.Attributes
-                        // Creamos un nuevo objeto con solo los datos que queremos enviar (sin password)
-                        const dataSinPassword = {
-                            id: data.Attributes.id,
-                            nombre: data.Attributes.nombre,
-                            contacto: data.Attributes.contacto,
-                            activo: data.Attributes.activo,
-                            registrado: data.Attributes.registrado,
-                            primer_ingreso: data.Attributes.primer_ingreso,
-                            fecha_alta: data.Attributes.fecha_alta,
-                            fecha_cambio_password: data.Attributes.fecha_cambio_password,
-                            fecha_ultimo_ingreso: data.Attributes.fecha_ultimo_ingreso
-                        };
-                        res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": { Attributes: dataSinPassword }}));
-                    }    
-                });    
-            }
-        }    
+            // Ahora actualizamos la password usando el ID
+            const paramsUpdate = { 
+                ExpressionAttributeNames: { 
+                     "#p": "password" 
+                }, 
+                ExpressionAttributeValues: { 
+                    ":p": password 
+               }, 
+               Key: { 
+                   "id": clienteId 
+               }, 
+               ReturnValues: "ALL_NEW", 
+               TableName: "cliente", 
+               UpdateExpression: "SET #p = :p" 
+            };
+            
+            docClient.update(paramsUpdate, function (err, data) {
+                if (err)  {
+                    res.status(400).send(JSON.stringify({response : "ERROR", message : "DB access error "+err}));
+                    return;
+                } else {
+                    // Excluir password de la respuesta por seguridad
+                    const dataSinPassword = {
+                        id: data.Attributes.id,
+                        nombre: data.Attributes.nombre,
+                        contacto: data.Attributes.contacto,
+                        activo: data.Attributes.activo,
+                        registrado: data.Attributes.registrado,
+                        primer_ingreso: data.Attributes.primer_ingreso,
+                        fecha_alta: data.Attributes.fecha_alta,
+                        fecha_cambio_password: data.Attributes.fecha_cambio_password,
+                        fecha_ultimo_ingreso: data.Attributes.fecha_ultimo_ingreso
+                    };
+                    console.log('resetCliente: Contraseña actualizada exitosamente');
+                    res.status(200).send(JSON.stringify({response : "OK", message : "updated" , "data": { Attributes: dataSinPassword }}));
+                }    
+            });
+        }
     })
+    .catch(error => {
+        console.error('resetCliente: Error en scanDb:', error);
+        res.status(400).send({response : "ERROR" , message : "Error al buscar cliente"});
+    });
 });
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 /*                                                       API REST ticket                                                             *
