@@ -167,4 +167,12 @@ fetch(`${APIREST_URL}`,options)
         document.getElementById('mensajes').style.color = 'RED';
         document.getElementById('mensajes').innerHTML = 'No hay tickets pendientes';
     }
+})
+.catch((error) => {
+    // Manejo de errores de red (ej: servidor apagado, sin conexión)
+    console.error('Error de conexión con el servidor:', error);
+    document.getElementById('mensajes').style.textAlign = 'center';
+    document.getElementById('mensajes').style.color = 'RED';
+    document.getElementById('mensajes').innerHTML = 
+        'Error: No se puede conectar con el servidor. Verifique que el servidor esté corriendo.';
 });
