@@ -227,11 +227,19 @@ formE1.addEventListener('submit', (event) => {
 					'&fecha_ultimo_ingreso=' +
 					users.fecha_ultimo_ingreso +
 					'&mode=' + MODE;
-			} else {
-				console.log('La password no es correcta');
-				document.getElementById('resultado1').style.color = 'RED'; /*--Fix hecho por  Germán Lombardi IS1-2025 */
-				document.getElementById('resultado1').textContent =
-					'Error de login, intente nuevamente';                  /*--Fix hecho por  Germán Lombardi IS1-2025 */
-			}
-		});
+		} else {
+			console.log('La password no es correcta');
+			document.getElementById('resultado1').style.color = 'RED'; /*--Fix hecho por  Germán Lombardi IS1-2025 */
+			document.getElementById('resultado1').textContent =
+				'Error de login, intente nuevamente';                  /*--Fix hecho por  Germán Lombardi IS1-2025 */
+		}
+	})
+	.catch((error) => {
+		// Manejo de errores de red (ej: servidor apagado, sin conexión)
+		console.error('Error de conexión con el servidor:', error);
+		document.getElementById('resultado1').style.color = 'RED';
+		document.getElementById('resultado1').style.textAlign = 'center';
+		document.getElementById('resultado1').textContent =
+			'Error: No se puede conectar con el servidor';
+	});
 });
