@@ -240,6 +240,6 @@ formE1.addEventListener('submit', (event) => {
 		document.getElementById('resultado1').style.color = 'RED';
 		document.getElementById('resultado1').style.textAlign = 'center';
 		document.getElementById('resultado1').textContent =
-			'Error: No se puede conectar con el servidor. Verifique que el servidor esté corriendo.';
+			'Error: No se puede conectar con el servidor';
 	});
 });

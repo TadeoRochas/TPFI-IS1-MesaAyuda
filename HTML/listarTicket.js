@@ -174,5 +174,5 @@ fetch(`${APIREST_URL}`,options)
     document.getElementById('mensajes').style.textAlign = 'center';
     document.getElementById('mensajes').style.color = 'RED';
     document.getElementById('mensajes').innerHTML = 
-        'Error: No se puede conectar con el servidor. Verifique que el servidor esté corriendo.';
+        'Error: No se puede conectar con el servidor.';
 });
