@@ -85,14 +85,13 @@ function jsonParser(keyValue,stringValue) {
   /api/getCliente
   Esta API permite acceder a un cliente dado su id
 */
-app.post('/api/getCliente/:id', (req,res) => {
-    const { id } = req.params;
-    console.log("getCliente: id("+id+")");
+app.post('/api/getCliente/:contacto', (req,res) => {
+    const { contacto } = req.params;
+    console.log("getCliente: contacto("+contacto+")");
     var params = {
         TableName: "cliente",
         Key: {
-            "id" : id
-            //test use "id": "0533a95d-7eef-4c6b-b753-1a41c9d1fbd0"   
+            "contacto" : contacto
              }
         };
     docClient.get(params, function (err, data) {
@@ -196,7 +195,7 @@ app.post('/api/loginCliente', (req, res) => {
                 res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'Cliente no activo' }));
             }
         } else {
-            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'usuario incorrecto' }));
+            res.status(400).send(JSON.stringify({ response: 'ERROR', message: 'Información incorrecta' }));
         }
     });
 });
